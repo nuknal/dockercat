@@ -1,11 +1,9 @@
 package main
 
 import (
-	"os"
-
 	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/nuknal/dockercat/pkg/gui"
-	"github.com/sirupsen/logrus"
+	"github.com/nuknal/dockercat/pkg/version"
 )
 
 const (
@@ -22,13 +20,7 @@ type cpuUsage struct {
 }
 
 func main() {
-	file, err := os.OpenFile("logrus.log", os.O_CREATE|os.O_WRONLY, 0666)
-	if err == nil {
-		logrus.SetOutput(file)
-	} else {
-		logrus.Info("Failed to log to file, using default stderr")
-	}
-
+	version.Show()
 	config := docker.NewClientConfig(endpoint, "", "", "", apiVersion)
 	d := docker.NewDocker(config)
 	gui := gui.New(d)
