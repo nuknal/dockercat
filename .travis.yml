@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.13
+env:
+  - GO111MODULE=on
+deploy:
+  provider: releases
+  api_key:
+  secure: d2f65e25399f35369e9b143686b8153c9347fd08
+  file: bin/dockercat-mac-amd64
+  skip_cleanup: true
+  on:
+    tags: true
+notifications:
+  email: true
