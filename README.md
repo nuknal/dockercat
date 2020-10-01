@@ -1,5 +1,7 @@
 # dockercat - Another Terminal UI for Docker
 
+![demo](https://github.com/nuknal/dockercat/blob/master/images/dockercat-v0.1.0.gif?raw=true)
+
 ## About dockercat
 
 Mix UI and functions of [lazydocker](https://github.com/jesseduffield/lazydocker) and [docui](https://github.com/skanehira/docui). Focus on managing existed images and containers.
