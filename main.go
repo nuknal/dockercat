@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/nuknal/dockercat/pkg/gui"
-	"github.com/nuknal/dockercat/pkg/version"
+	_ "github.com/nuknal/dockercat/pkg/version"
 )
 
 const (
@@ -20,7 +20,6 @@ type cpuUsage struct {
 }
 
 func main() {
-	version.Show()
 	config := docker.NewClientConfig(endpoint, "", "", "", apiVersion)
 	d := docker.NewDocker(config)
 	gui := gui.New(d)

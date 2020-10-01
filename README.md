@@ -8,7 +8,7 @@ Ijust make it so simple to find out information that I care about most: conteine
 
 UIKit: [tview](https://github.com/rivo/tview)
 
-**It's NOT a good idea of using it in you production environment.**
+**It's NOT a good idea to use it in your production environment.**
 
 ## Supported OS
 
@@ -32,7 +32,13 @@ $ GO111MODULE=on go install
 
 ### Homebrew
 
+```
+$ brew tap nuknal/taps
+$ brew install dockercat
+```
+
 ## TODO
 
 - k8s
 - docker-compose
+- colorful
