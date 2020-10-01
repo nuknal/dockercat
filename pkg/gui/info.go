@@ -44,7 +44,7 @@ func newInfoPanel(g *Gui) *infoPanel {
 	info.dockerInfo = g.getDockerInfo()
 
 	about := `[yellow]------------------------------------
-dockercat: Another Terminal UI for Docker
+Dockercat: Another Terminal UI for Docker
 |- container
 	|- start/stop
 	|- inspect/logs/stats

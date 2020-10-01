@@ -14,6 +14,6 @@ LD_FLAGS="-s -w -X '${VERSION_PKG}.BuildTime=${BUILD_TIME}'                \
 
 build:
 	env GOOS=linux GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat-linux-amd64 main.go
-	env GOOS=darwin GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat main.go
+	env GOOS=darwin GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat-mac-amd64 main.go
 clean:
 	rm -rf ./bin
