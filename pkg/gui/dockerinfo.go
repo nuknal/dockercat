@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nuknal/dockercat/pkg/common"
 	"github.com/nuknal/dockercat/pkg/docker"
 )
 
@@ -18,6 +19,11 @@ type dockerInfo struct {
 	Containers    int
 	Images        int
 	MemTotal      string
+}
+
+type diskUsage struct {
+	imagesSize  string
+	volumesSize string
 }
 
 func (g *Gui) getDockerInfo() (*dockerInfo, error) {
@@ -45,4 +51,31 @@ func (g *Gui) getDockerInfo() (*dockerInfo, error) {
 		Images:        info.Images,
 		MemTotal:      fmt.Sprintf("%dMB", info.MemTotal/1024/1024),
 	}, nil
+}
+
+func (g *Gui) getDiskUsage() *diskUsage {
+	du := &diskUsage{
+		imagesSize:  "0 MB",
+		volumesSize: "0 MB",
+	}
+
+	dus, err := g.client.SystemDf()
+	if err != nil {
+		g.errChan <- err
+		return du
+	}
+
+	var totalSizeOfImgs int64
+	for _, i := range dus.Images {
+		totalSizeOfImgs += i.Size
+	}
+	du.imagesSize = common.ParseSizeToString(totalSizeOfImgs)
+
+	var totalSizeOfVolumes int64
+	for _, v := range dus.Volumes {
+		totalSizeOfVolumes += v.UsageData.Size
+	}
+	du.volumesSize = common.ParseSizeToString(totalSizeOfVolumes)
+
+	return du
 }

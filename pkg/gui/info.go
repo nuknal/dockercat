@@ -10,13 +10,21 @@ import (
 	"github.com/rivo/tview"
 )
 
-type diskUsage struct {
-	_type       string
-	total       int
-	active      int
-	size        string
-	reclaimable string
-}
+const (
+	about = `[yellow]------------------------------------
+Dockercat: Another Terminal UI for Docker
+	|- container
+		|- start/stop
+		|- inspect/logs/stats
+	|- image
+		|- inspect/remove
+	|- volume
+		|- inspect/remove
+	|- network
+		|- inspect/remove
+------------------------------------[white]
+`
+)
 
 // the panel for display detail information
 type infoPanel struct {
@@ -24,7 +32,6 @@ type infoPanel struct {
 	key             string              // a key likes "container-id-logs"
 	stopReadStreams map[string]chan int // container logs stream and stat stream
 	itemTextView    *tview.TextView
-	dockerInfo      *dockerInfo
 }
 
 func newInfoPanel(g *Gui) *infoPanel {
@@ -41,51 +48,42 @@ func newInfoPanel(g *Gui) *infoPanel {
 	info.setKeybinding(g)
 
 	info.key = "system-docker-info"
-	info.dockerInfo, _ = g.getDockerInfo()
-
-	about := `[yellow]------------------------------------
-Dockercat: Another Terminal UI for Docker
-|- container
-	|- start/stop
-	|- inspect/logs/stats
-|- image
-	|- inspect/remove
-|- volume
-	|- inspect/remove
-|- network
-	|- inspect/remove
-------------------------------------
-`
-	var dInfo string
-	if info.dockerInfo != nil {
-		dInfo = fmt.Sprintf("[green]Docker\n  Host: [%s][%s] \n  Endpoint: [%s]\n  %s Mem | %d Containers | %d Images[white]\n\n",
-			info.dockerInfo.HostName,
-			info.dockerInfo.ServerVersion,
-			info.dockerInfo.Endpoint,
-			info.dockerInfo.MemTotal,
-			info.dockerInfo.Containers,
-			info.dockerInfo.Images,
-		)
-	}
-
-	info.itemTextView = tview.NewTextView().SetText(dInfo + about)
+	info.itemTextView = tview.NewTextView().SetText(about)
 	info.itemTextView.SetBorder(true)
 	info.itemTextView.SetDynamicColors(true)
 	info.AddItem(info.itemTextView, 0, 1, true)
 
+	info.getDockerInfo(g)
+
 	return info
 }
 
-// TODO
-func (i *infoPanel) diskUsage(g *Gui) string {
-	_, err := g.client.SystemDf()
-	if err != nil {
-		g.errChan <- err
-		return ""
-	}
+func (i *infoPanel) getDockerInfo(g *Gui) {
+	go func() {
+		dockerInfo, _ := g.getDockerInfo()
+		du := g.getDiskUsage()
 
-	return ""
+		var dInfo string
+		if dockerInfo != nil {
+			dInfo = fmt.Sprintf("[green]Docker\n  Host: [%s][%s] \n  Endpoint: [%s]\n  %s Mem | %d Containers | %d Images %s | volumes %s[white]\n\n",
+				dockerInfo.HostName,
+				dockerInfo.ServerVersion,
+				dockerInfo.Endpoint,
+				dockerInfo.MemTotal,
+				dockerInfo.Containers,
+				dockerInfo.Images,
+				du.imagesSize,
+				du.volumesSize,
+			)
+		}
 
+		g.app.QueueUpdateDraw(func() {
+			// TODO mutex read key
+			if i.key == "system-docker-info" {
+				i.itemTextView.SetText(dInfo + about)
+			}
+		})
+	}()
 }
 
 func (i *infoPanel) name() string {

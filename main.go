@@ -1,13 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/integrii/flaggy"
 	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/nuknal/dockercat/pkg/gui"
 	"github.com/nuknal/dockercat/pkg/version"
-	_ "github.com/nuknal/dockercat/pkg/version"
 )
 
 const (
@@ -15,20 +15,12 @@ const (
 	apiVersion = "1.39"
 )
 
-type cpu struct {
-	Usage cpuUsage `json:"cpu_usage"`
-}
-
-type cpuUsage struct {
-	Total float64 `json:"total_usage"`
-}
-
 func main() {
 	config := docker.NewClientConfig(endpoint, "", "", "", apiVersion)
 	d := docker.NewDocker(config)
 
-	if err := d.ErrorConnectionFailed(); err != nil {
-		fmt.Println(err.Error())
+	if _, err := d.Ping(context.Background()); err != nil {
+		fmt.Println(err)
 		return
 	}
 
