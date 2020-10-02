@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/integrii/flaggy"
 	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/nuknal/dockercat/pkg/gui"
@@ -24,6 +26,12 @@ type cpuUsage struct {
 func main() {
 	config := docker.NewClientConfig(endpoint, "", "", "", apiVersion)
 	d := docker.NewDocker(config)
+
+	if err := d.ErrorConnectionFailed(); err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
 	gui := gui.New(d)
 	gui.Run()
 }
