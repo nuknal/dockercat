@@ -1,8 +1,8 @@
 language: go
 go:
-- 1.13
+  - 1.13
 env:
-- GO111MODULE=on
+  - GO111MODULE=on
 deploy:
   provider: releases
   api_key:
@@ -10,6 +10,7 @@ deploy:
   file: bin/dockercat-mac-amd64
   on:
     repo: nuknal/dockercat
-  skip_cleanup: 'true'
+    tags: true
+  skip_cleanup: true
 notifications:
   email: true

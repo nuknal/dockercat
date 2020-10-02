@@ -12,6 +12,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/gdamore/tcell v1.3.0
 	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/integrii/flaggy v1.4.4 // indirect
 	github.com/jesseduffield/asciigraph v0.4.2-0.20190605104717-6d88e39309ee
 	github.com/lexkong/log v0.0.0-20180607165131-972f9cd951fc
 	github.com/mcuadros/go-lookup v0.0.0-20200831155250-80f87a4fa5ee

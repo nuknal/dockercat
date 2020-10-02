@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/integrii/flaggy"
 	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/nuknal/dockercat/pkg/gui"
+	"github.com/nuknal/dockercat/pkg/version"
 	_ "github.com/nuknal/dockercat/pkg/version"
 )
 
@@ -24,4 +26,12 @@ func main() {
 	d := docker.NewDocker(config)
 	gui := gui.New(d)
 	gui.Run()
+}
+
+func init() {
+	flaggy.SetName("DockerCat")
+	flaggy.SetDescription("A Terminal UI For Docker")
+	flaggy.SetVersion(version.BuildVersion)
+	flaggy.DefaultParser.AdditionalHelpPrepend = "http://github.com/nuknal/dockercat"
+	flaggy.Parse()
 }
