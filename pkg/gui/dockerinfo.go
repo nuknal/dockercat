@@ -20,10 +20,10 @@ type dockerInfo struct {
 	MemTotal      string
 }
 
-func (g *Gui) getDockerInfo() *dockerInfo {
+func (g *Gui) getDockerInfo() (*dockerInfo, error) {
 	info, err := g.client.Info(context.TODO())
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	var apiVersion string
@@ -44,5 +44,5 @@ func (g *Gui) getDockerInfo() *dockerInfo {
 		Containers:    info.Containers,
 		Images:        info.Images,
 		MemTotal:      fmt.Sprintf("%dMB", info.MemTotal/1024/1024),
-	}
+	}, nil
 }

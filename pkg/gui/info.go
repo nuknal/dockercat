@@ -41,7 +41,7 @@ func newInfoPanel(g *Gui) *infoPanel {
 	info.setKeybinding(g)
 
 	info.key = "system-docker-info"
-	info.dockerInfo = g.getDockerInfo()
+	info.dockerInfo, _ = g.getDockerInfo()
 
 	about := `[yellow]------------------------------------
 Dockercat: Another Terminal UI for Docker
@@ -56,14 +56,17 @@ Dockercat: Another Terminal UI for Docker
 	|- inspect/remove
 ------------------------------------
 `
-	dInfo := fmt.Sprintf("[green]Docker\n  Host: [%s][%s] \n  Endpoint: [%s]\n  %s Mem | %d Containers | %d Images[white]\n\n",
-		info.dockerInfo.HostName,
-		info.dockerInfo.ServerVersion,
-		info.dockerInfo.Endpoint,
-		info.dockerInfo.MemTotal,
-		info.dockerInfo.Containers,
-		info.dockerInfo.Images,
-	)
+	var dInfo string
+	if info.dockerInfo != nil {
+		dInfo = fmt.Sprintf("[green]Docker\n  Host: [%s][%s] \n  Endpoint: [%s]\n  %s Mem | %d Containers | %d Images[white]\n\n",
+			info.dockerInfo.HostName,
+			info.dockerInfo.ServerVersion,
+			info.dockerInfo.Endpoint,
+			info.dockerInfo.MemTotal,
+			info.dockerInfo.Containers,
+			info.dockerInfo.Images,
+		)
+	}
 
 	info.itemTextView = tview.NewTextView().SetText(dInfo + about)
 	info.itemTextView.SetBorder(true)
