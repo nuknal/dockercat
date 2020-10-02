@@ -66,10 +66,3 @@ func NewDocker(config *ClientConfig) *Docker {
 
 	return Client
 }
-
-// ErrorConnectionFailed ...
-// returns an error with host in the error message when connection to docker daemon failed.
-func (d *Docker) ErrorConnectionFailed() error {
-	err := client.ErrorConnectionFailed(d.DaemonHost())
-	return err
-}
