@@ -6,7 +6,7 @@
 
 Mix UI and functions of [lazydocker](https://github.com/jesseduffield/lazydocker) and [docui](https://github.com/skanehira/docui). Focus on managing existed images and containers.
 
-Ijust make it so simple to find out information that I care about most: conteiner logs|stats|env, image size|unused, volume mountpoint. It's easy to release disk space for host.
+I just make it so simple to find out information that I care about most: conteiner logs|stats|env, image size|unused, volume mountpoint. It's easy to release disk space for host.
 
 UIKit: [tview](https://github.com/rivo/tview)
 
