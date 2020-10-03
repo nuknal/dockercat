@@ -1,7 +1,7 @@
 .PHONY: build clean deploy
 
 BUILD_TIME=`date '+%Y%m%d%H%M%S'`
-BUILD_VERSION=0.1.0
+BUILD_VERSION=0.1.1
 COMMIT_ID=`git rev-parse HEAD`
 GO_VERSION=`go version`
 BUILD_NAME=release
