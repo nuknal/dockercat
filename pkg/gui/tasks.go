@@ -49,11 +49,12 @@ func (t *tasks) setKeybinding(g *Gui) {
 	t.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		g.setGlobalKeybinding(event)
 
-		// TODO cancel task
 		switch event.Key() {
 		}
 
 		switch event.Rune() {
+		case 'c':
+			g.cancelTask()
 		}
 
 		return event

@@ -2,7 +2,10 @@ package docker
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
@@ -56,4 +59,39 @@ func (d *Docker) RemoveDanglingImages() error {
 func (d *Docker) HistoryImage(name string) ([]image.HistoryResponseItem, error) {
 	his, err := d.ImageHistory(context.TODO(), name)
 	return his, err
+}
+
+func (d *Docker) PullImage(ref string) error {
+	rc, err := d.ImagePull(context.TODO(), ref, types.ImagePullOptions{})
+	if err != nil {
+		return err
+	}
+	defer rc.Close()
+	_, _ = io.Copy(io.Discard, rc)
+	return nil
+}
+
+func (d *Docker) TagImage(source, target string) error {
+	return d.ImageTag(context.TODO(), source, target)
+}
+
+func (d *Docker) PruneImages() error {
+	_, err := d.ImagesPrune(context.TODO(), filters.Args{})
+	return err
+}
+
+func (d *Docker) PushImage(ref, username, password string) error {
+	authConfig := map[string]string{
+		"username": username,
+		"password": password,
+	}
+	authBytes, _ := json.Marshal(authConfig)
+	auth := base64.StdEncoding.EncodeToString(authBytes)
+	rc, err := d.ImagePush(context.TODO(), ref, types.ImagePushOptions{RegistryAuth: auth})
+	if err != nil {
+		return err
+	}
+	defer rc.Close()
+	_, _ = io.Copy(io.Discard, rc)
+	return nil
 }

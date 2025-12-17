@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/nuknal/dockercat/pkg/common"
-	"github.com/nuknal/dockercat/pkg/docker"
 )
 
 type dockerInfo struct {
@@ -46,7 +45,7 @@ func (g *Gui) getDockerInfo() (*dockerInfo, error) {
 		KernelVersion: info.KernelVersion,
 		OSType:        info.OSType,
 		Architecture:  info.Architecture,
-		Endpoint:      docker.Client.DaemonHost(),
+		Endpoint:      g.client.DaemonHost(),
 		Containers:    info.Containers,
 		Images:        info.Images,
 		MemTotal:      fmt.Sprintf("%dMB", info.MemTotal/1024/1024),

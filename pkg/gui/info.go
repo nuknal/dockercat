@@ -195,7 +195,7 @@ LOOP:
 }
 
 func (i *infoPanel) containerStats(g *Gui, container *container) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(g.refreshInterval)
 
 LOOP:
 	for {

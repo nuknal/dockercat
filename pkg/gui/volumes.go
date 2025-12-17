@@ -6,7 +6,6 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nuknal/dockercat/pkg/common"
-	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/rivo/tview"
 )
 
@@ -48,6 +47,8 @@ func (v *volumePanel) setKeybinding(g *Gui) {
 			g.inspectVolume()
 		case tcell.KeyCtrlR:
 			v.setEntries(g)
+		case tcell.KeyCtrlD:
+			g.pruneVolumes()
 		}
 
 		switch event.Rune() {
@@ -60,7 +61,7 @@ func (v *volumePanel) setKeybinding(g *Gui) {
 }
 
 func (v *volumePanel) entries(g *Gui) {
-	volumes, err := docker.Client.Volumes()
+	volumes, err := g.client.Volumes()
 	if err != nil {
 		return
 	}
@@ -141,7 +142,7 @@ func (v *volumePanel) setFilterWord(word string) {
 }
 
 func (v *volumePanel) monitoringVolumes(g *Gui) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(g.refreshInterval)
 
 LOOP:
 	for {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 )
 
 // Networks get networks
@@ -19,4 +20,9 @@ func (d *Docker) InspectNetwork(name string) (types.NetworkResource, error) {
 // RemoveNetwork remove network
 func (d *Docker) RemoveNetwork(name string) error {
 	return d.NetworkRemove(context.TODO(), name)
+}
+
+func (d *Docker) PruneNetworks() error {
+	_, err := d.NetworksPrune(context.TODO(), filters.Args{})
+	return err
 }

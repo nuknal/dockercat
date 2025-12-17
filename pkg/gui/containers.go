@@ -42,12 +42,14 @@ type containerPanel struct {
 	filterWord     string
 	log            *logrus.Entry
 	containersStat map[string]*containerStat
+	selected       map[string]bool
 }
 
 func newContainerPanel(g *Gui) *containerPanel {
 	containers := &containerPanel{
 		Table:          tview.NewTable().SetSelectable(true, false).Select(0, 0).SetFixed(1, 1),
 		containersStat: make(map[string]*containerStat),
+		selected:       make(map[string]bool),
 	}
 
 	statsConfig = &StatsConfig{
@@ -100,6 +102,20 @@ func (c *containerPanel) setKeybinding(g *Gui) {
 			g.startContainer()
 		case 's':
 			g.stopContainer()
+		case 'm':
+			c.toggleSelectCurrent(g)
+		case 'U':
+			g.batchStartContainers()
+		case 'S':
+			g.batchStopContainers()
+		case 'D':
+			g.batchRemoveContainers()
+		case 'r':
+			g.restartContainer()
+		case 'p':
+			g.pauseContainer()
+		case 'o':
+			g.unpauseContainer()
 		}
 
 		return event
@@ -140,6 +156,20 @@ func (c *containerPanel) entries(g *Gui) {
 			State:  con.State,
 		})
 	}
+
+	present := make(map[string]struct{}, len(g.resources.containers))
+	for _, con := range g.resources.containers {
+		present[con.ID] = struct{}{}
+	}
+	for id, cstat := range c.containersStat {
+		if _, ok := present[id]; !ok {
+			select {
+			case cstat.stopChan <- 1:
+			default:
+			}
+			delete(c.containersStat, id)
+		}
+	}
 }
 
 func (c *containerPanel) setEntries(g *Gui) {
@@ -149,6 +179,7 @@ func (c *containerPanel) setEntries(g *Gui) {
 	table.SetSelectedStyle(tcell.ColorBlack, tcell.ColorWhite, 0)
 
 	headers := []string{
+		"Sel",
 		"Name",
 		"Status",
 	}
@@ -165,12 +196,20 @@ func (c *containerPanel) setEntries(g *Gui) {
 	}
 
 	for i, container := range g.resources.containers {
-		table.SetCell(i+1, 0, tview.NewTableCell(container.Name).
+		mark := ""
+		if c.selected[container.ID] {
+			mark = "●"
+		}
+		table.SetCell(i+1, 0, tview.NewTableCell(mark).
+			SetTextColor(tcell.ColorLightGreen).
+			SetMaxWidth(1).
+			SetExpansion(0))
+		table.SetCell(i+1, 1, tview.NewTableCell(container.Name).
 			SetTextColor(tcell.ColorWhite).
 			SetMaxWidth(1).
 			SetExpansion(1))
 
-		table.SetCell(i+1, 1, tview.NewTableCell(container.Status).
+		table.SetCell(i+1, 2, tview.NewTableCell(container.Status).
 			SetTextColor(containerCellColor(container.State)).
 			SetMaxWidth(1).
 			SetExpansion(1))
@@ -218,8 +257,17 @@ func (c *containerPanel) setFilterWord(word string) {
 	c.filterWord = word
 }
 
+func (c *containerPanel) toggleSelectCurrent(g *Gui) {
+	con := g.selectedContainer()
+	if con == nil {
+		return
+	}
+	c.selected[con.ID] = !c.selected[con.ID]
+	c.updateEntries(g)
+}
+
 func (c *containerPanel) monitoringContainers(g *Gui) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(g.refreshInterval)
 
 LOOP:
 	for {

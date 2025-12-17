@@ -36,3 +36,16 @@ func (g *Gui) removeVolume() {
 		})
 	})
 }
+
+func (g *Gui) pruneVolumes() {
+	g.confirm("Do you want to remove unused volumes", "volumes", func() {
+		g.addTask("prune volumes", "unused volumes", func(ctx context.Context) error {
+			if err := g.client.PruneVolumes(); err != nil {
+				g.errChan <- err
+				return err
+			}
+			g.volumePanel().updateEntries(g)
+			return nil
+		})
+	})
+}

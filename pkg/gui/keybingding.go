@@ -13,8 +13,8 @@ func (g *Gui) setGlobalKeybinding(event *tcell.EventKey) {
 		g.nextPanel()
 	case 'q':
 		g.Stop()
-		// case '/':
-		// 	g.filter()
+	case '/':
+		g.filter()
 	}
 
 	switch event.Key() {

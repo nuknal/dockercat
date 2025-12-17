@@ -109,3 +109,99 @@ func (g *Gui) removeContainer() {
 	})
 
 }
+
+func (g *Gui) restartContainer() {
+	container := g.selectedContainer()
+	g.addTask("restart container", container.Name, func(ctx context.Context) error {
+		if err := g.client.RestartContainer(container.ID); err != nil {
+			g.Log.Errorf("cannot restart container %s", err)
+			return err
+		}
+		g.containerPanel().updateEntries(g)
+		return nil
+	})
+}
+
+func (g *Gui) pauseContainer() {
+	container := g.selectedContainer()
+	g.addTask("pause container", container.Name, func(ctx context.Context) error {
+		if err := g.client.PauseContainer(container.ID); err != nil {
+			g.Log.Errorf("cannot pause container %s", err)
+			return err
+		}
+		g.containerPanel().updateEntries(g)
+		return nil
+	})
+}
+
+func (g *Gui) unpauseContainer() {
+	container := g.selectedContainer()
+	g.addTask("unpause container", container.Name, func(ctx context.Context) error {
+		if err := g.client.UnpauseContainer(container.ID); err != nil {
+			g.Log.Errorf("cannot unpause container %s", err)
+			return err
+		}
+		g.containerPanel().updateEntries(g)
+		return nil
+	})
+}
+
+func (g *Gui) batchStartContainers() {
+	ids := make([]string, 0)
+	for id, sel := range g.containerPanel().selected {
+		if sel {
+			ids = append(ids, id)
+		}
+	}
+	for _, id := range ids {
+		name := id
+		g.addTask("start container", name, func(ctx context.Context) error {
+			if err := g.client.StartContainer(id); err != nil {
+				g.Log.Errorf("cannot start container %s", err)
+				return err
+			}
+			g.containerPanel().updateEntries(g)
+			return nil
+		})
+	}
+}
+
+func (g *Gui) batchStopContainers() {
+	ids := make([]string, 0)
+	for id, sel := range g.containerPanel().selected {
+		if sel {
+			ids = append(ids, id)
+		}
+	}
+	for _, id := range ids {
+		name := id
+		g.addTask("stop container", name, func(ctx context.Context) error {
+			if err := g.client.StopContainer(id); err != nil {
+				g.Log.Errorf("cannot stop container %s", err)
+				return err
+			}
+			g.containerPanel().updateEntries(g)
+			return nil
+		})
+	}
+}
+
+func (g *Gui) batchRemoveContainers() {
+	ids := make([]string, 0)
+	for id, sel := range g.containerPanel().selected {
+		if sel {
+			ids = append(ids, id)
+		}
+	}
+	for _, id := range ids {
+		name := id
+		g.addTask("remove container", name, func(ctx context.Context) error {
+			if err := g.client.RemoveContainer(id); err != nil {
+				g.Log.Errorf("cannot remove container %s", err)
+				return err
+			}
+			g.containerPanel().updateEntries(g)
+			return nil
+		})
+	}
+}

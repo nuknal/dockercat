@@ -8,7 +8,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/gdamore/tcell"
 	"github.com/nuknal/dockercat/pkg/common"
-	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/rivo/tview"
 )
 
@@ -49,6 +48,8 @@ func (n *networkPanel) setKeybinding(g *Gui) {
 			g.inspectNetwork()
 		case tcell.KeyCtrlR:
 			n.setEntries(g)
+		case tcell.KeyCtrlD:
+			g.pruneNetworks()
 		}
 
 		switch event.Rune() {
@@ -61,7 +62,7 @@ func (n *networkPanel) setKeybinding(g *Gui) {
 }
 
 func (n *networkPanel) entries(g *Gui) {
-	networks, err := docker.Client.Networks(types.NetworkListOptions{})
+	networks, err := g.client.Networks(types.NetworkListOptions{})
 	if err != nil {
 		return
 	}
@@ -76,7 +77,7 @@ func (n *networkPanel) entries(g *Gui) {
 
 		var containers string
 
-		net, err := docker.Client.InspectNetwork(net.ID)
+		net, err := g.client.InspectNetwork(net.ID)
 		if err != nil {
 			continue
 		}
@@ -156,7 +157,7 @@ func (n *networkPanel) setFilterWord(word string) {
 }
 
 func (n *networkPanel) monitoringNetworks(g *Gui) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(g.refreshInterval)
 
 LOOP:
 	for {

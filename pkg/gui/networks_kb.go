@@ -36,3 +36,16 @@ func (g *Gui) removeNetwork() {
 		})
 	})
 }
+
+func (g *Gui) pruneNetworks() {
+	g.confirm("Do you want to remove unused networks", "networks", func() {
+		g.addTask("prune networks", "unused networks", func(ctx context.Context) error {
+			if err := g.client.PruneNetworks(); err != nil {
+				g.errChan <- err
+				return err
+			}
+			g.networkPanel().updateEntries(g)
+			return nil
+		})
+	})
+}

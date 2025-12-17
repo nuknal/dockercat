@@ -7,7 +7,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/gdamore/tcell"
 	"github.com/nuknal/dockercat/pkg/common"
-	"github.com/nuknal/dockercat/pkg/docker"
 	"github.com/rivo/tview"
 )
 
@@ -57,6 +56,12 @@ func (i *imagePanel) setKeybinding(g *Gui) {
 			g.historyImage()
 		case 'd':
 			g.removeImage()
+		case 'p':
+			g.pullImage()
+		case 't':
+			g.tagImage()
+		case 'P':
+			g.pushImage()
 		}
 
 		return event
@@ -64,7 +69,7 @@ func (i *imagePanel) setKeybinding(g *Gui) {
 }
 
 func (i *imagePanel) entries(g *Gui) {
-	images, err := docker.Client.Images(types.ImageListOptions{})
+	images, err := g.client.Images(types.ImageListOptions{})
 	if err != nil {
 		return
 	}
@@ -147,7 +152,7 @@ func (i *imagePanel) setFilterWord(word string) {
 }
 
 func (i *imagePanel) monitoringImages(g *Gui) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(g.refreshInterval)
 
 LOOP:
 	for {
