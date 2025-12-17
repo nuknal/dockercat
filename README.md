@@ -1,46 +1,82 @@
-# dockercat - Another Terminal UI for Docker
+# DockerCat - Terminal UI for Docker
 
-![demo](https://github.com/nuknal/dockercat/blob/master/images/dockercat-v0.1.0.gif?raw=true)
+<p align="center">
+  <img src="images/screenshot.png" alt="DockerCat" />
+</p>
 
-## About dockercat
+## About
 
-Mix UI and functions of [lazydocker](https://github.com/jesseduffield/lazydocker) and [docui](https://github.com/skanehira/docui). Focus on managing existed images and containers.
-
-I just make it so simple to find out information that I care about most: conteiner logs|stats|env, image size|unused, volume mountpoint. It's easy to release disk space for host.
+DockerCat is a terminal UI (TUI) for Docker. It focuses on day-to-day container and image operations, plus quick cleanup to free disk space.
 
 UIKit: [tview](https://github.com/rivo/tview)
 
-**It's NOT a good idea to use it in your production environment.**
+**Do not use it in production environments.**
+
+## Features
+
+- Panels: Containers, Images, Volumes, Networks, Cleanup, Info, Tasks
+- Inspect: press `Enter` to view JSON details in the right pane
+- Containers: start/stop/restart, pause/unpause, logs (`Ctrl+l`), stats (`Ctrl+s`), batch actions (select with `m`, then `U/S/D`)
+- Images: remove, remove dangling (`Ctrl+d`), layer history (`s`), pull (`p`), tag (`t`), push (`P`)
+- Volumes/Networks: inspect, remove, prune unused (`Ctrl+d`)
+- Cleanup: system prune (`a`) or prune by type (`c/i/n/v`)
+- Filter list: press `/` in the current panel
+- Background tasks: long operations are queued and shown in the Tasks panel (cancel with `c`)
+
+## Keybindings (Quick Start)
+
+- Switch panels: `h` / `l`, `←` / `→`, `Tab`
+- Filter: `/`
+- Inspect: `Enter`
+- Quit: `q`
+- Scroll detail view: `Ctrl+j` / `Ctrl+k`
 
 ## Supported OS
 
-- Mac
+- macOS
 
-## Required Tools
+## Requirements
 
-- Go Ver.1.13+
-- Docker Engine Ver.18.06.1+
-- Git
+- Go 1.13+
+- Docker Engine 18.06.1+
 
 ## Installation
-
-### From Source
-
-```
-$ git clone https://github.com/nuknal/dockercat.git
-$ cd dockercat/
-$ GO111MODULE=on go install
-```
 
 ### Homebrew
 
 ```
-$ brew tap nuknal/taps
-$ brew install dockercat
+brew tap nuknal/taps
+brew install dockercat
 ```
+
+### From source
+
+```
+git clone https://github.com/nuknal/dockercat.git
+cd dockercat
+GO111MODULE=on go install
+```
+
+### Build binaries (macOS/Linux)
+
+```
+make build
+ls -la bin/
+```
+
+## Usage
+
+```
+dockercat [flags]
+
+  -H, --host          docker host, e.g. unix:///var/run/docker.sock
+  -A, --api-version   docker api version, e.g. 1.39
+  -R, --refresh       refresh interval, e.g. 5s
+```
+
+If `DOCKER_HOST` is set, dockercat uses Docker environment variables (including TLS settings via `DOCKER_TLS_VERIFY` / `DOCKER_CERT_PATH`).
 
 ## TODO
 
 - k8s
 - docker-compose
-- colorful
