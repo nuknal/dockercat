@@ -1,4 +1,4 @@
-.PHONY: build clean deploy mac clean
+.PHONY: build clean deploy
 
 BUILD_TIME=`date '+%Y%m%d%H%M%S'`
 BUILD_VERSION=0.1.1
@@ -12,12 +12,8 @@ LD_FLAGS="-s -w -X '${VERSION_PKG}.BuildTime=${BUILD_TIME}'                \
                          -X '${VERSION_PKG}.CommitID=${COMMIT_ID}'         \
                          -X '${VERSION_PKG}.GoVersion=${GO_VERSION}'"
 
-build: mac linux
-
-mac: 
-	env GOOS=darwin GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat-mac-amd64 main.go
-linux:
-	env GOOS=linux GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat-linux-amd64 main.go
+build: 
+	env GOOS=darwin GOARCH=amd64 go build -ldflags=${LD_FLAGS} -o bin/dockercat main.go
 
 clean:
 	rm -rf ./bin
