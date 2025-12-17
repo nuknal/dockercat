@@ -26,6 +26,10 @@ func (g *Gui) setGlobalKeybinding(event *tcell.EventKey) {
 		g.nextPanel()
 	case tcell.KeyLeft:
 		g.prevPanel()
+	case tcell.KeyCtrlJ:
+		g.infoPanel().scrollDown()
+	case tcell.KeyCtrlK:
+		g.infoPanel().scrollUp()
 	}
 }
 

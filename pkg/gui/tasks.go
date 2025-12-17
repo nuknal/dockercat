@@ -34,8 +34,10 @@ func newTasks(g *Gui) *tasks {
 		tasks: make(chan *task, 10),
 	}
 
-	tasks.SetTitle("tasks").SetTitleAlign(tview.AlignLeft)
+	tasks.SetTitle(" Tasks ").SetTitleAlign(tview.AlignLeft)
 	tasks.SetBorder(true)
+	tasks.SetBorderColor(CurrentTheme.Border)
+	tasks.SetTitleColor(CurrentTheme.Title)
 	tasks.setEntries(g)
 	tasks.setKeybinding(g)
 	return tasks
@@ -71,8 +73,9 @@ func (t *tasks) setEntries(g *Gui) {
 		return
 	}
 	table := t.Clear()
+	table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
 	headers := []string{
-		"Name",
+		"  Name",
 		"Target",
 		"Status",
 		"Created",
@@ -83,33 +86,33 @@ func (t *tasks) setEntries(g *Gui) {
 			Text:            header,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	for i, task := range g.resources.tasks {
 		row := len(g.resources.tasks) - i
-		table.SetCell(row, 0, tview.NewTableCell(task.Name).
-			SetTextColor(tcell.ColorLightGreen).
+		table.SetCell(row, 0, tview.NewTableCell("  "+task.Name).
+			SetTextColor(CurrentTheme.Tasks).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(2))
 
 		table.SetCell(row, 1, tview.NewTableCell(task.Target).
-			SetTextColor(tcell.ColorLightGreen).
+			SetTextColor(CurrentTheme.Tasks).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(2))
 
 		table.SetCell(row, 2, tview.NewTableCell(task.Status).
-			SetTextColor(tcell.ColorLightGreen).
+			SetTextColor(CurrentTheme.Tasks).
 			SetMaxWidth(1).
 			SetExpansion(1))
 
 		table.SetCell(row, 3, tview.NewTableCell(task.CreatedAt).
-			SetTextColor(tcell.ColorLightGreen).
+			SetTextColor(CurrentTheme.Tasks).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(2))
 
 	}
 }

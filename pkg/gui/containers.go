@@ -68,8 +68,10 @@ func newContainerPanel(g *Gui) *containerPanel {
 		},
 	}
 
-	containers.SetTitle("containers").SetTitleAlign(tview.AlignLeft)
+	containers.SetTitle(" Containers ").SetTitleAlign(tview.AlignLeft)
 	containers.SetBorder(true)
+	containers.SetBorderColor(CurrentTheme.Border)
+	containers.SetTitleColor(CurrentTheme.Title)
 	containers.setEntries(g)
 	containers.setKeybinding(g)
 	return containers
@@ -172,15 +174,13 @@ func (c *containerPanel) entries(g *Gui) {
 	}
 }
 
-func (c *containerPanel) setEntries(g *Gui) {
-	c.entries(g)
+func (c *containerPanel) render(g *Gui) {
 	table := c.Clear()
 
-	table.SetSelectedStyle(tcell.ColorBlack, tcell.ColorWhite, 0)
+	table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
 
 	headers := []string{
-		"Sel",
-		"Name",
+		"  Name",
 		"Status",
 	}
 
@@ -189,53 +189,33 @@ func (c *containerPanel) setEntries(g *Gui) {
 			Text:            header,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	for i, container := range g.resources.containers {
-		mark := ""
+		mark := "  "
 		if c.selected[container.ID] {
-			mark = "●"
+			mark = "● "
 		}
-		table.SetCell(i+1, 0, tview.NewTableCell(mark).
-			SetTextColor(tcell.ColorLightGreen).
-			SetMaxWidth(1).
-			SetExpansion(0))
-		table.SetCell(i+1, 1, tview.NewTableCell(container.Name).
-			SetTextColor(tcell.ColorWhite).
-			SetMaxWidth(1).
-			SetExpansion(1))
 
-		table.SetCell(i+1, 2, tview.NewTableCell(container.Status).
-			SetTextColor(containerCellColor(container.State)).
+		table.SetCell(i+1, 0, tview.NewTableCell(mark+container.Name).
+			SetTextColor(CurrentTheme.ListItem).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(3))
+
+		table.SetCell(i+1, 1, tview.NewTableCell(container.Status).
+			SetTextColor(GetStatusColor(container.State)).
+			SetMaxWidth(1).
+			SetExpansion(2))
 	}
 }
 
-func containerCellColor(state string) tcell.Color {
-	switch state {
-	case "exited":
-		return tcell.ColorRed
-	case "created":
-		return tcell.ColorLightCyan
-	case "running":
-		return tcell.ColorGreen
-	case "paused":
-		return tcell.ColorYellow
-	case "dead":
-		return tcell.ColorDarkRed
-	case "restarting":
-		return tcell.ColorBlue
-	case "removing":
-		return tcell.ColorDarkMagenta
-	default:
-		return tcell.ColorWhite
-	}
-
+func (c *containerPanel) setEntries(g *Gui) {
+	c.entries(g)
+	c.render(g)
 }
 
 func (c *containerPanel) focus(g *Gui) {
@@ -263,7 +243,9 @@ func (c *containerPanel) toggleSelectCurrent(g *Gui) {
 		return
 	}
 	c.selected[con.ID] = !c.selected[con.ID]
-	c.updateEntries(g)
+	g.app.QueueUpdateDraw(func() {
+		c.render(g)
+	})
 }
 
 func (c *containerPanel) monitoringContainers(g *Gui) {

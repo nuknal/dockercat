@@ -17,8 +17,10 @@ func newCleanupPanel(g *Gui) *cleanupPanel {
 	p := &cleanupPanel{
 		Table: tview.NewTable().SetSelectable(true, false).Select(0, 0).SetFixed(1, 1),
 	}
-	p.SetTitle("cleanup").SetTitleAlign(tview.AlignLeft)
+	p.SetTitle(" Cleanup ").SetTitleAlign(tview.AlignLeft)
 	p.SetBorder(true)
+	p.SetBorderColor(CurrentTheme.Border)
+	p.SetTitleColor(CurrentTheme.Title)
 	p.setEntries(g)
 	p.setKeybinding(g)
 	return p
@@ -83,33 +85,40 @@ func (c *cleanupPanel) entries(g *Gui) {
 	du := g.getDiskUsage()
 
 	c.Table.Clear()
+	c.Table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
 
-	headers := []string{"Action", "Targets", "Count", "Size"}
+	headers := []string{"  Action", "Targets", "Count", "Size"}
 	for i, h := range headers {
 		c.Table.SetCell(0, i, &tview.TableCell{
 			Text:            h,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	rows := [][]string{
-		{"c: prune containers", "stopped containers", fmt.Sprintf("%d", stopped), ""},
-		{"i: prune images", "dangling images", fmt.Sprintf("%d", dangling), du.imagesSize},
-		{"n: prune networks", "unused networks", fmt.Sprintf("%d", unusedN), ""},
-		{"v: prune volumes", "unused volumes", "", du.volumesSize},
-		{"a: system prune", "all unused (safe)", "", ""},
+		{"  c: prune containers", "stopped containers", fmt.Sprintf("%d", stopped), ""},
+		{"  i: prune images", "dangling images", fmt.Sprintf("%d", dangling), du.imagesSize},
+		{"  n: prune networks", "unused networks", fmt.Sprintf("%d", unusedN), ""},
+		{"  v: prune volumes", "unused volumes", "", du.volumesSize},
+		{"  a: system prune", "all unused (safe)", "", ""},
 	}
 
 	for i, r := range rows {
 		for j, col := range r {
+			expansion := 1
+			if j == 0 {
+				expansion = 3
+			} else if j == 1 {
+				expansion = 2
+			}
 			c.Table.SetCell(i+1, j, tview.NewTableCell(col).
-				SetTextColor(tcell.ColorLightGreen).
+				SetTextColor(CurrentTheme.CleanupItems).
 				SetMaxWidth(1).
-				SetExpansion(1))
+				SetExpansion(expansion))
 		}
 	}
 }
@@ -134,4 +143,3 @@ func (c *cleanupPanel) unfocus() {
 }
 
 func (c *cleanupPanel) setFilterWord(word string) {}
-

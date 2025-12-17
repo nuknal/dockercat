@@ -28,8 +28,10 @@ func newVolumePanel(g *Gui) *volumePanel {
 		Table: tview.NewTable().SetSelectable(true, false).Select(0, 0),
 	}
 
-	volumes.SetTitle("volumes").SetTitleAlign(tview.AlignLeft)
+	volumes.SetTitle(" Volumes ").SetTitleAlign(tview.AlignLeft)
 	volumes.SetBorder(true)
+	volumes.SetBorderColor(CurrentTheme.Border)
+	volumes.SetTitleColor(CurrentTheme.Title)
 	volumes.setEntries(g)
 	volumes.setKeybinding(g)
 	return volumes
@@ -94,8 +96,10 @@ func (v *volumePanel) setEntries(g *Gui) {
 	v.entries(g)
 	table := v.Clear()
 
+	table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
+
 	headers := []string{
-		"Name",
+		"  Name",
 		"MountPoint",
 	}
 
@@ -104,21 +108,21 @@ func (v *volumePanel) setEntries(g *Gui) {
 			Text:            header,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	for i, network := range g.resources.volumes {
-		table.SetCell(i+1, 0, tview.NewTableCell(network.Name).
-			SetTextColor(tcell.ColorLightPink).
+		table.SetCell(i+1, 0, tview.NewTableCell("  "+network.Name).
+			SetTextColor(CurrentTheme.Volumes).
 			SetMaxWidth(1).
 			SetExpansion(1))
 		table.SetCell(i+1, 1, tview.NewTableCell(network.MountPoint).
-			SetTextColor(tcell.ColorLightPink).
+			SetTextColor(CurrentTheme.Volumes).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(2))
 	}
 }
 

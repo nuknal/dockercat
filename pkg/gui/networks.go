@@ -29,8 +29,10 @@ func newNetworkPanel(g *Gui) *networkPanel {
 		Table: tview.NewTable().SetSelectable(true, false),
 	}
 
-	networks.SetTitle("networks").SetTitleAlign(tview.AlignLeft)
+	networks.SetTitle(" Networks ").SetTitleAlign(tview.AlignLeft)
 	networks.SetBorder(true)
+	networks.SetBorderColor(CurrentTheme.Border)
+	networks.SetTitleColor(CurrentTheme.Title)
 	networks.setEntries(g)
 	networks.setKeybinding(g)
 	return networks
@@ -109,8 +111,10 @@ func (n *networkPanel) setEntries(g *Gui) {
 	n.entries(g)
 	table := n.Clear()
 
+	table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
+
 	headers := []string{
-		"Name",
+		"  Name",
 		"Containers",
 	}
 
@@ -119,21 +123,21 @@ func (n *networkPanel) setEntries(g *Gui) {
 			Text:            header,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	for i, network := range g.resources.networks {
-		table.SetCell(i+1, 0, tview.NewTableCell(network.Name).
-			SetTextColor(tcell.ColorLightSkyBlue).
+		table.SetCell(i+1, 0, tview.NewTableCell("  "+network.Name).
+			SetTextColor(CurrentTheme.Networks).
 			SetMaxWidth(1).
 			SetExpansion(1))
 		table.SetCell(i+1, 1, tview.NewTableCell(network.Containers).
-			SetTextColor(tcell.ColorLightSkyBlue).
+			SetTextColor(CurrentTheme.Networks).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(3))
 	}
 }
 

@@ -11,18 +11,33 @@ import (
 )
 
 const (
-	about = `[yellow]------------------------------------
-Dockercat: Another Terminal UI for Docker
-	|- container
-		|- start/stop
-		|- inspect/logs/stats
-	|- image
-		|- inspect/remove
-	|- volume
-		|- inspect/remove
-	|- network
-		|- inspect/remove
-------------------------------------[white]
+	about = `------------------------------------
+[cyan::b]Dockercat[-::-]  Terminal UI for Docker
+
+[green::b]Quick Start[-::-]
+  [yellow::b]h/l[-::-] or [yellow::b]←/→[-::-], [yellow::b]Tab[-::-]   Switch panels
+  [yellow::b]/[-::-]                       Filter list in current panel
+  [yellow::b]Enter[-::-]                   Inspect item (detail on right)
+  [yellow::b]q[-::-]                       Quit
+
+[green::b]Containers[-::-]
+  [yellow::b]m[-::-] Select   [yellow::b]U/S/D[-::-] Batch start/stop/remove
+  [yellow::b]u/s/r[-::-] Start/Stop/Restart   [yellow::b]p/o[-::-] Pause/Unpause
+  [yellow::b]Ctrl+l[-::-] Logs   [yellow::b]Ctrl+s[-::-] Stats
+
+[green::b]Images[-::-]
+  [yellow::b]d[-::-] Remove   [yellow::b]p[-::-] Pull   [yellow::b]t[-::-] Tag   [yellow::b]P[-::-] Push
+
+[green::b]Volumes / Networks[-::-]
+  [yellow::b]Enter[-::-] Inspect   [yellow::b]d[-::-] Remove   [yellow::b]Ctrl+d[-::-] Prune (where supported)
+
+[green::b]Cleanup[-::-]
+  [yellow::b]a[-::-] System prune   [yellow::b]c/i/n/v[-::-] Prune by type
+
+[green::b]Detail View[-::-]
+  [yellow::b]Ctrl+j / Ctrl+k[-::-] Scroll detail
+  [gray]Tip: Bottom bar shows panel-specific shortcuts.[-]
+------------------------------------
 `
 )
 
@@ -51,6 +66,8 @@ func newInfoPanel(g *Gui) *infoPanel {
 	info.itemTextView = tview.NewTextView().SetText(about)
 	info.itemTextView.SetBorder(true)
 	info.itemTextView.SetDynamicColors(true)
+	info.itemTextView.SetBorderColor(CurrentTheme.Border)
+	info.itemTextView.SetTextColor(CurrentTheme.Fg)
 	info.AddItem(info.itemTextView, 0, 1, true)
 
 	info.getDockerInfo(g)
@@ -121,6 +138,18 @@ func (i *infoPanel) unfocus() {
 
 func (i *infoPanel) setFilterWord(string) {
 
+}
+
+func (i *infoPanel) scrollDown() {
+	row, col := i.itemTextView.GetScrollOffset()
+	i.itemTextView.ScrollTo(row+1, col)
+}
+
+func (i *infoPanel) scrollUp() {
+	row, col := i.itemTextView.GetScrollOffset()
+	if row > 0 {
+		i.itemTextView.ScrollTo(row-1, col)
+	}
 }
 
 func (i *infoPanel) switchItemTextView(v *tview.TextView, fromKey, toKey string) {

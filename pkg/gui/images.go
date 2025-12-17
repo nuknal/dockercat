@@ -28,8 +28,10 @@ func newImagePanel(g *Gui) *imagePanel {
 		Table: tview.NewTable().SetSelectable(true, false).Select(0, 0).SetFixed(1, 1),
 	}
 
-	images.SetTitle("images").SetTitleAlign(tview.AlignLeft)
+	images.SetTitle(" Images ").SetTitleAlign(tview.AlignLeft)
 	images.SetBorder(true)
+	images.SetBorderColor(CurrentTheme.Border)
+	images.SetTitleColor(CurrentTheme.Title)
 	images.setEntries(g)
 	images.setKeybinding(g)
 	return images
@@ -98,8 +100,10 @@ func (i *imagePanel) setEntries(g *Gui) {
 	i.entries(g)
 	table := i.Clear()
 
+	table.SetSelectedStyle(CurrentTheme.SelectedFg, CurrentTheme.SelectedBg, 0)
+
 	headers := []string{
-		"Repo",
+		"  Repo",
 		"Tag",
 		"Size",
 	}
@@ -109,24 +113,24 @@ func (i *imagePanel) setEntries(g *Gui) {
 			Text:            header,
 			NotSelectable:   true,
 			Align:           tview.AlignLeft,
-			Color:           tcell.ColorWhite,
-			BackgroundColor: tcell.ColorDefault,
+			Color:           CurrentTheme.Header,
+			BackgroundColor: CurrentTheme.Bg,
 			Attributes:      tcell.AttrBold,
 		})
 	}
 
 	for i, image := range g.resources.images {
-		table.SetCell(i+1, 0, tview.NewTableCell(image.Repo).
-			SetTextColor(tcell.ColorLightYellow).
+		table.SetCell(i+1, 0, tview.NewTableCell("  "+image.Repo).
+			SetTextColor(CurrentTheme.Images).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(4))
 
 		table.SetCell(i+1, 1, tview.NewTableCell(image.Tag).
-			SetTextColor(tcell.ColorLightYellow).
+			SetTextColor(CurrentTheme.Images).
 			SetMaxWidth(1).
-			SetExpansion(1))
+			SetExpansion(2))
 		table.SetCell(i+1, 2, tview.NewTableCell(image.Size).
-			SetTextColor(tcell.ColorLightYellow).
+			SetTextColor(CurrentTheme.Images).
 			SetMaxWidth(1).
 			SetExpansion(1))
 	}
