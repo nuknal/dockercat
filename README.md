@@ -1,7 +1,7 @@
 # DockerCat - Terminal UI for Docker
 
 <p align="center">
-  <img src="images/screenshot.png" alt="DockerCat" />
+  <img src="screenshots/screenshot.png" alt="DockerCat" />
 </p>
 
 ## About
